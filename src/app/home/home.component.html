@@ -1,0 +1,86 @@
+<div class="container-lg  d-flex align-items-center justify-content-center mt-5 ">
+
+
+  <span class=" border-top border-bottom  border-3">
+    <h1 class="fst-italic">Product Order list</h1>
+  </span>
+</div>
+
+<div class="container mt-5">
+  <h2 class="mb-4 text-body-secondary">Select Products and Quantities</h2>
+  <form #productForm="ngForm">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products; let i = index">
+
+          <td>
+            <div class="form-group">
+              <select class="form-control" [(ngModel)]="product.name" name="productName{{i}}" required>
+                <option value="" disabled selected>Choose Product</option>
+                <option *ngFor="let p of productOptions" [value]="p">{{ p }}</option>
+
+              </select>
+              <!-- {{product.name}} -->
+            </div>
+          </td>
+
+
+          <td>
+            <div class="form-group">
+              <select class="form-control" [(ngModel)]="product.quantity" name="quantity{{i}}"
+                [disabled]="!product.name" required>
+
+                <option value="" disabled selected>Choose Quantity</option>
+                <option *ngFor="let q of quantities" [value]="q">{{ q }}</option>
+                <!-- {{product.quantity}} -->
+              </select>
+            </div>
+          </td>
+          <td>
+            <button type="button" class="btn btn-primary" (click)="addRow(i)"
+              [disabled]="!product.name || !product.quantity">ADD</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button type="button" class="btn btn-success" (click)="showOrder()" [disabled]="!isValidOrder()">Show Order</button>
+  </form>
+</div>
+
+<div *ngIf="orderVisible" class="mt-5 container">
+  <h3>Your Order</h3>
+
+  <table class="table table-bordered">
+
+    <tbody>
+      <tr *ngFor="let product of selectedProducts">
+        <td>
+          <div class="form-group">
+            {{ product.name }}
+          </div>
+        </td>
+        <td>
+          <div class="form-group">
+            {{ product.quantity }}
+          </div>
+        </td>
+
+      </tr>
+    </tbody>
+  </table>
+
+  <div>
+
+  <button (click)="whatIsMyOrder()">What is my Order?</button>
+  <div *ngIf="isLoading">Loading...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+ 
+</div>
+</div>
