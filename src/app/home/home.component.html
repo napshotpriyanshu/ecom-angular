@@ -8,7 +8,7 @@
 
 <div class="container mt-5">
   <h2 class="mb-4 text-body-secondary">Select Products and Quantities</h2>
-  <form #productForm="ngForm">
+  <form  [formGroup]="orderForm">
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -17,44 +17,51 @@
           <th>Action</th>
         </tr>
       </thead>
-      <tbody>
-        <tr *ngFor="let product of products; let i = index">
+      <tbody formArrayName="items">
+        <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
 
           <td>
             <div class="form-group">
-              <select class="form-control" [(ngModel)]="product.name" name="productName{{i}}" required>
-                <option value="" disabled selected>Choose Product</option>
+              <select class="form-control" formControlName="name" required>
+                <option value="" disabled  selected>Choose Product</option>
                 <option *ngFor="let p of productOptions" [value]="p">{{ p }}</option>
 
               </select>
               <!-- {{product.name}} -->
+              <div *ngIf="item.get('name')?.touched && item.get('name')?.invalid" class="text-danger">
+                <small>Product is required.</small>
+              </div>
             </div>
           </td>
 
 
           <td>
             <div class="form-group">
-              <select class="form-control" [(ngModel)]="product.quantity" name="quantity{{i}}"
-                [disabled]="!product.name" required>
+              <select class="form-control"  formControlName="quantity">
 
                 <option value="" disabled selected>Choose Quantity</option>
                 <option *ngFor="let q of quantities" [value]="q">{{ q }}</option>
                 <!-- {{product.quantity}} -->
               </select>
+              <div *ngIf="item.get('quantity')?.touched && item.get('quantity')?.invalid" class="text-danger">
+                <small *ngIf="item.get('quantity')?.errors?.['required']">Quantity is required.</small>
+                <small *ngIf="item.get('quantity')?.errors?.['min'] || items.get('quantity')?.errors?.['max']">Invalid quantity.</small>
+                
+              </div>
             </div>
           </td>
           <td>
-            <button type="button" class="btn btn-primary" (click)="addRow(i)"
-              [disabled]="!product.name || !product.quantity">ADD</button>
+            <button type="button" class="btn btn-primary" (click)="addRow()"
+              [disabled]="items.length >= 8 "  >ADD</button>
           </td>
         </tr>
       </tbody>
     </table>
-    <button type="button" class="btn btn-success" (click)="showOrder()" [disabled]="!isValidOrder()">Show Order</button>
+    <button type="button" class="btn btn-success" (click)="showOrder()" >Show Order</button>
   </form>
 </div>
 
-<div *ngIf="orderVisible" class="mt-5 container">
+<div class="mt-5 container">
   <h3>Your Order</h3>
 
   <table class="table table-bordered">
